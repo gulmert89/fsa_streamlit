@@ -8,7 +8,7 @@ from streamlit import image as st_image, title as st_title, \
 #from cv2 import VideoCapture, resize, cvtColor, rectangle, putText, \
 #    imshow, destroyAllWindows, FONT_HERSHEY_COMPLEX, LINE_AA
 from numpy import copy, expand_dims, argmax
-#from cvlib import detect_face
+from cvlib import detect_face
 
 st_title("Facial Sentiment Analysis")
 WINDOW = st_image([])

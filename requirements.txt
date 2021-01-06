@@ -3,4 +3,4 @@ tensorflow==2.0.0
 streamlit==0.62.0
 #Keras==2.0.0
 cvlib==0.2.5
-opencv-python==4.1.0.25
+opencv-python
