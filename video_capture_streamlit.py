@@ -5,6 +5,7 @@ from cv2 import VideoCapture, resize, cvtColor, rectangle, putText, \
     imshow, destroyAllWindows, FONT_HERSHEY_COMPLEX, LINE_AA
 from numpy import copy, expand_dims, argmax
 from cvlib import detect_face
+import streamlit.components.v1 as components
 
 st_title("Facial Sentiment Analysis")
 WINDOW = st_image([])
@@ -20,6 +21,12 @@ if __name__ == "__main__":
     detectFace_threshold = 0.80
     predictFace_threshold = 0.60 * 100
     #model = tf.keras.models.load_model(r'./model/')
+    components.html(
+    """
+    <script src='//cameratag.com/api/v14/js/cameratag.min.js' type='text/javascript'></script>
+    <link rel='stylesheet' href='//cameratag.com/static/14/cameratag.css'></link>
+    <camera data-app-id='a-c56a1620-3271-0139-a34e-0aac5b511429' id='myCamera'></camera>
+    """, height=600)
     cap = VideoCapture(0)
     count = 0
     if st_button("Click here to open the camera."):
