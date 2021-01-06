@@ -5,8 +5,8 @@ from tensorflow.keras.models import load_model
 
 from streamlit import image as st_image, title as st_title, \
     button as st_button, text as st_text
-#from cv2 import VideoCapture, resize, cvtColor, rectangle, putText, \
-#    imshow, destroyAllWindows, FONT_HERSHEY_COMPLEX, LINE_AA
+from cv2 import VideoCapture, resize, cvtColor, rectangle, putText, \
+    imshow, destroyAllWindows, FONT_HERSHEY_COMPLEX, LINE_AA
 from numpy import copy, expand_dims, argmax
 from cvlib import detect_face
 
