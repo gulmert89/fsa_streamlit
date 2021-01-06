@@ -12,7 +12,7 @@ from cvlib import detect_face
 
 st_title("Facial Sentiment Analysis")
 WINDOW = st_image([])
-#model = load_model(r'./model/')
+model = load_model(r'./model/')
 
 def getClassName(classIndex):
     "A basic function to get the class name."
