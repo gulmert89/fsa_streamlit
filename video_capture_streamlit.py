@@ -26,7 +26,8 @@ def getClassName(classIndex):
 if __name__ == "__main__":    
     detectFace_threshold = 0.70
     predictFace_threshold = 0.35 * 100
-    image_file = st_file_uploader("Upload your selfie here:", type=["jpg", "jpeg", "png"])     st_text("(Psst: Try not to take your selfie too close to your face.)")
+    image_file = st_file_uploader("Upload your selfie here:", type=["jpg", "jpeg", "png"])
+    st_text("Hint: Try not to hold the camera too close to your face.")
     if image_file is not None:
         image_file = Image.open(image_file)
         try:
