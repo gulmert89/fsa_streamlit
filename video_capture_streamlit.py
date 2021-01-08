@@ -1,15 +1,14 @@
 from tensorflow.keras.models import load_model
 from streamlit import image as st_image, title as st_title, cache as st_cache,\
     button as st_button, text as st_text, file_uploader as st_file_uploader
-from cv2 import VideoCapture, resize, cvtColor, rectangle, putText, imwrite, imread,\
+from cv2 import VideoCapture, resize, cvtColor, rectangle, putText,\
     imshow, destroyAllWindows, FONT_HERSHEY_COMPLEX, LINE_AA, waitKey
 from numpy import copy, expand_dims, argmax, array
 from cvlib import detect_face
-from PIL import Image
 model = load_model(r'./model/')
+from PIL.Image import open as Image_open
 
 st_title("Facial Sentiment Analysis")
-WINDOW = st_image([])
 
 def getClassName(classIndex):
     "A basic function to get the class name."
@@ -18,10 +17,10 @@ def getClassName(classIndex):
     elif classIndex==2: return "Shocked"
     else:               return "Poker Face"
 
-@st_cache
-def img_load(img):
-    imag = Image.open(img)
-    return imag
+#@st_cache
+#def img_load(img):
+#    imag = Image_open(img)
+#    return imag
 
 if __name__ == "__main__":    
     detectFace_threshold = 0.85
@@ -30,7 +29,7 @@ if __name__ == "__main__":
     image_file = st_file_uploader("Upload your selfie here:", type=["jpg", "jpeg", "png"])
     
     if image_file is not None:
-        frame = array(image_file)
+        frame = array(Image_open(image_file))
         faces, confidences = detect_face(frame, threshold=detectFace_threshold)
         for f in faces:
             # corner points of facial frame: 
@@ -85,4 +84,4 @@ if __name__ == "__main__":
                         color=text_color, 
                         thickness=1)
 
-        imshow("Face_Sentiment", frame)
+        st_image(frame)
