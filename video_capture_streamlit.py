@@ -5,8 +5,9 @@ from cv2 import VideoCapture, resize, cvtColor, rectangle, putText, imwrite,\
     imshow, imread, destroyAllWindows, FONT_HERSHEY_COMPLEX, LINE_AA, waitKey
 from numpy import copy, expand_dims, argmax, array
 from cvlib import detect_face
-model = load_model(r'./model/')
 from PIL import Image, ExifTags
+
+model = load_model(r'./model/')
 
 st_title("Facial Sentiment Analysis")
 
@@ -25,7 +26,6 @@ def getClassName(classIndex):
 if __name__ == "__main__":    
     detectFace_threshold = 0.70
     predictFace_threshold = 0.35 * 100
-    #model = tf.keras.models.load_model(r'./model/')
     image_file = st_file_uploader("Upload your selfie here:", type=["jpg", "jpeg", "png"])    
     if image_file is not None:
         image_file = Image.open(image_file)
