@@ -1,12 +1,12 @@
 from tensorflow.keras.models import load_model
 from streamlit import image as st_image, title as st_title, cache as st_cache,\
     button as st_button, text as st_text, file_uploader as st_file_uploader
-from cv2 import VideoCapture, resize, cvtColor, rectangle, putText,\
-    imshow, destroyAllWindows, FONT_HERSHEY_COMPLEX, LINE_AA, waitKey
+from cv2 import VideoCapture, resize, cvtColor, rectangle, putText, imwrite,\
+    imshow, imread, destroyAllWindows, FONT_HERSHEY_COMPLEX, LINE_AA, waitKey
 from numpy import copy, expand_dims, argmax, array
 from cvlib import detect_face
 model = load_model(r'./model/')
-from PIL.Image import open as Image_open
+from PIL import Image, ExifTags
 
 st_title("Facial Sentiment Analysis")
 
@@ -26,12 +26,28 @@ if __name__ == "__main__":
     detectFace_threshold = 0.70
     predictFace_threshold = 0.35 * 100
     #model = tf.keras.models.load_model(r'./model/')
-    image_file = st_file_uploader("Upload your selfie here:", type=["jpg", "jpeg", "png"])
-    
+    image_file = st_file_uploader("Upload your selfie here:", type=["jpg", "jpeg", "png"])    
     if image_file is not None:
-        frame = array(Image_open(image_file))
+        image_file = Image.open(image_file)
+        try:
+            for orientation in ExifTags.TAGS.keys():
+                if ExifTags.TAGS[orientation]=='Orientation':
+                    exif_orientation = orientation
+                    break        
+            exif = image_file._getexif()
+
+            if exif[exif_orientation] == 3:
+                image_file = image_file.rotate(180, expand=True)
+            elif exif[exif_orientation] == 6:
+                image_file = image_file.rotate(270, expand=True)
+            elif exif[exif_orientation] == 8:
+                image_file = image_file.rotate(90, expand=True)
+        except (AttributeError, KeyError, IndexError):
+            # cases: image don't have getexif
+            pass
+        frame = array(image_file)        
         height = 540
-        width = (frame.shape[1] // frame.shape[0]) * height
+        width = int((frame.shape[0] / frame.shape[1]) * height)
         frame = resize(frame, (height, width))
         faces, confidences = detect_face(frame, threshold=detectFace_threshold)
         for f in faces:
@@ -58,16 +74,16 @@ if __name__ == "__main__":
                 frame_text = f"{className} ({int(max_probability)}%)"
                 # BLUE - GREEN - RED
                 if className == "Shocked":
-                    rect_color = text_color = (0, 255, 255)
+                    rect_color = text_color = (255, 255, 0)
                 elif className == "Sad":
-                    rect_color = text_color = (0, 0, 255)
+                    rect_color = text_color = (255, 0, 0)
                 elif className == "Happy":
                     rect_color = text_color = (0, 255, 0)
                 elif className == "Poker Face":
-                    rect_color = text_color = (214, 112, 218)
+                    rect_color = text_color = (218, 112, 214)
 
             else:
-                rect_color = text_color = (255, 255, 0)
+                rect_color = text_color = (0, 255, 255)
                 frame_text = "Reading..."    
 
             rectangle(img=frame, 
