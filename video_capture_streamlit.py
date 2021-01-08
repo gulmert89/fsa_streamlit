@@ -1,11 +1,12 @@
 from tensorflow.keras.models import load_model
-from streamlit import image as st_image, title as st_title, \
-    button as st_button, text as st_text
-from cv2 import VideoCapture, resize, cvtColor, rectangle, putText, \
-    imshow, destroyAllWindows, FONT_HERSHEY_COMPLEX, LINE_AA
-from numpy import copy, expand_dims, argmax
+from streamlit import image as st_image, title as st_title, cache as st_cache,\
+    button as st_button, text as st_text, file_uploader as st_file_uploader
+from cv2 import VideoCapture, resize, cvtColor, rectangle, putText, imwrite, imread,\
+    imshow, destroyAllWindows, FONT_HERSHEY_COMPLEX, LINE_AA, waitKey
+from numpy import copy, expand_dims, argmax, array
 from cvlib import detect_face
-import streamlit.components.v1 as components
+from PIL import Image
+model = load_model(r'./model/')
 
 st_title("Facial Sentiment Analysis")
 WINDOW = st_image([])
@@ -17,27 +18,71 @@ def getClassName(classIndex):
     elif classIndex==2: return "Shocked"
     else:               return "Poker Face"
 
+@st_cache
+def img_load(img):
+    imag = Image.open(img)
+    return imag
+
 if __name__ == "__main__":    
-    detectFace_threshold = 0.80
-    predictFace_threshold = 0.60 * 100
+    detectFace_threshold = 0.85
+    predictFace_threshold = 0.35 * 100
     #model = tf.keras.models.load_model(r'./model/')
-    components.html(
-    """
-    <script src='//cameratag.com/api/v14/js/cameratag.min.js' type='text/javascript'></script>
-    <link rel='stylesheet' href='//cameratag.com/static/14/cameratag.css'></link>
-    <camera data-app-id='a-c56a1620-3271-0139-a34e-0aac5b511429' id='myCamera'></camera>
-    """, height=600)
-    cap = VideoCapture(0)
-    count = 0
-    if st_button("Click here to open the camera."):
-        st_text("(No worries. The camera will be automatically closed.)")
-        while count < 100:
-            ret, frame = cap.read()
-            if not ret:
-                print("Can't receive the frame.")
-                break
-            WINDOW.image(frame[..., ::-1])
-            count += 1
-        cap.release()
-        destroyAllWindows()
-        st_text("THANKS FOR GIVING MY MODEL A SHOT! :)")
+    image_file = st_file_uploader("Upload your selfie here:", type=["jpg", "jpeg", "png"])
+    
+    if image_file is not None:
+        frame = array(image_file)
+        faces, confidences = detect_face(frame, threshold=detectFace_threshold)
+        for f in faces:
+            # corner points of facial frame: 
+            (startX, startY) = (f[0], f[1])    # top left corner
+            (endX, endY) = (f[2], f[3])    # bottom right corner
+            # crop it from the whole frame:
+            cropped_frame = copy(frame[startY:endY, startX:endX])        
+            # skip too small frames (10x10 pixels)
+            if (cropped_frame.shape[0]) < 10 or (cropped_frame.shape[1]) < 10:
+                continue
+            # preprocessing on the cropped frame
+            cropped_frame = resize(cropped_frame, (64,64))        
+            cropped_frame = cvtColor(cropped_frame, code=6)    # convert to grayscale
+            cropped_frame = cropped_frame.astype("float32") / 255.0
+            cropped_frame = expand_dims(cropped_frame, axis=[0,3])
+            confidences = model.predict(cropped_frame)[0]    # probability value
+            max_probability = max(confidences)*100
+            classIndex = argmax(confidences)
+            className = getClassName(classIndex)
+
+            # different colors for different sentiments
+            if max_probability > predictFace_threshold:
+                frame_text = f"{className} ({int(max_probability)}%)"
+                # BLUE - GREEN - RED
+                if className == "Shocked":
+                    rect_color = text_color = (0, 255, 255)
+                elif className == "Sad":
+                    rect_color = text_color = (0, 0, 255)
+                elif className == "Happy":
+                    rect_color = text_color = (0, 255, 0)
+                elif className == "Poker Face":
+                    rect_color = text_color = (214, 112, 218)
+
+            else:
+                rect_color = text_color = (255, 255, 0)
+                frame_text = "Reading..."    
+
+            rectangle(img=frame, 
+                        pt1=(startX, startY), 
+                        pt2=(endX, endY), 
+                        color=rect_color, 
+                        thickness=2)
+
+            # let's keep the text in the frame and avoid edges:
+            startY = startY - 10 if startY - 10 > 10 else startY + 10
+            putText(img=frame, 
+                        text=frame_text, 
+                        org=(startX, startY), 
+                        fontFace=FONT_HERSHEY_COMPLEX, 
+                        lineType=LINE_AA,
+                        fontScale=0.6, 
+                        color=text_color, 
+                        thickness=1)
+
+        imshow("Face_Sentiment", frame)
