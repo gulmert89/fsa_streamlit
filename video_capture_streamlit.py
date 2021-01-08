@@ -23,13 +23,16 @@ def getClassName(classIndex):
 #    return imag
 
 if __name__ == "__main__":    
-    detectFace_threshold = 0.85
+    detectFace_threshold = 0.70
     predictFace_threshold = 0.35 * 100
     #model = tf.keras.models.load_model(r'./model/')
     image_file = st_file_uploader("Upload your selfie here:", type=["jpg", "jpeg", "png"])
     
     if image_file is not None:
         frame = array(Image_open(image_file))
+        height = 540
+        width = (frame.shape[1] // frame.shape[0]) * height
+        frame = resize(frame, (height, width))
         faces, confidences = detect_face(frame, threshold=detectFace_threshold)
         for f in faces:
             # corner points of facial frame: 
