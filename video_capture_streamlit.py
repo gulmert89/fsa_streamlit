@@ -69,7 +69,6 @@ if __name__ == "__main__":
             classIndex = argmax(confidences)
             className = getClassName(classIndex)
 
-            # different colors for different sentiments
             if max_probability > predictFace_threshold:
                 frame_text = f"{className} ({int(max_probability)}%)"
                 # BLUE - GREEN - RED
