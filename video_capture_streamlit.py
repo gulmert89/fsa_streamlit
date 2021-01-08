@@ -46,7 +46,7 @@ if __name__ == "__main__":
             # cases: image don't have getexif
             pass
         frame = array(image_file)        
-        height = 540
+        height = 370
         width = int((frame.shape[0] / frame.shape[1]) * height)
         frame = resize(frame, (height, width))
         faces, confidences = detect_face(frame, threshold=detectFace_threshold)
