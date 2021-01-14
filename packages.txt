@@ -1,3 +1,4 @@
+update
 libsm6
 libxrender1
 libfontconfig1
@@ -5,7 +6,3 @@ libice6
 ffmpeg
 libxext6
 libgl1-mesa-glx
-python tensorflow
-python streamlit
-python cvlib
-python opencv-python
