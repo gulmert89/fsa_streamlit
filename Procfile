@@ -1,1 +1,0 @@
-web: sh setup.sh && streamlit run video_capture_streamlit.py
