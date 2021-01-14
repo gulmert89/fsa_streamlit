@@ -5,7 +5,7 @@ libice6
 ffmpeg
 libxext6
 libgl1-mesa-glx
-tensorflow
-streamlit
-cvlib
-opencv-python
+python tensorflow
+python streamlit
+python cvlib
+python opencv-python
