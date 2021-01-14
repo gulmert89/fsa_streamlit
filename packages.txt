@@ -1,4 +1,6 @@
 update
+freeglut3-dev
+libgtk2.0-dev
 libsm6
 libxrender1
 libfontconfig1
