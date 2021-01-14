@@ -1,8 +1,8 @@
 update
-libsm6
-libxrender1
-libfontconfig1
-libice6
-ffmpeg
-libxext6
-libgl1-mesa-glx
+libsm6-dev
+libxrender1-dev
+libfontconfig1-dev
+libice6-dev
+ffmpeg-dev
+libxext6-dev
+libgl1-mesa-glx-dev
